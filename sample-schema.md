@@ -314,3 +314,10 @@
 	</tbody>
 </table>
 <!--DB-LINTER-->
+
+Note you can place anything above or below the `<`!`--DB-LINTER--`!`>` markers.
+But only descriptions inside the table.  Everything else is regenerated.
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+This spaced added so scrolling works as expected.
