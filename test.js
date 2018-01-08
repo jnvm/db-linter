@@ -1,6 +1,6 @@
 //incomplete
 beforeAll(async()=>{
-	`
+var pgForm=`
 create table "dimension" (
 	dimension_id uuid,
 	name text,
@@ -57,6 +57,11 @@ alter table organism_dimension add foreign key (organism_id)  references organis
 
 
 	`
+	
+var mysqlForm=pgForm
+	.replace(/"/g,'')
+	.replace(/uuid/g,'varchar(32)')
+	.replace(/serial/g,'int auto_increment')
 	
 	
 })

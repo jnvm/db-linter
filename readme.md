@@ -24,15 +24,15 @@ Run this during your test suite:
 ```javascript
 require('db-linter').run({
 	//sql flavor
-	lang: 'postgres',//or mysql
+	lang: 'postgres',//or 'mysql' (if using mariadb, say 'mysql')
 	//db creds
 	host: '127.0.0.1',
 	port: 5432,
-	user: '',//note this user will need access to information_schema
+	user: 'postgres',//note this user will need access to information_schema
 	password: '',
 	database:'test',
 	//module settings
-	path:'./readme.md',//where to look for a markdown file
+	path:'./readme.md',//where it should look for a markdown file
 	    //with 2 <!--DB-LINTER--> tags between which
 	    //to place generated markdown
 	rules:'all',//or array of rule name strings from readme

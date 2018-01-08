@@ -143,8 +143,6 @@ group by table_name,constraint_name,referenced_table_name`)).map(splitPluralCols
 }
 function makeMarkdownHtml(db,descriptions){
 	//recall https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb#L40
-	var t='generating markdown'
-	console.time(t)
 	function link(name){
 		return `<a href='#${name}'><code>${name}</code></a>`
 	}
@@ -178,7 +176,12 @@ function makeMarkdownHtml(db,descriptions){
 	<thead>
 		<tr>
 			<th>Table</th>
-			<th>Relations</th>
+			<th>Relations
+			<br>
+			${//put a spacer here as long as the longest table to keep all the arrows lined up
+				"&nbsp;".repeat(_.keys(db.tables).sort((a,b)=>b.length-a.length)[0].length)
+			}
+			</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -234,11 +237,10 @@ function makeMarkdownHtml(db,descriptions){
 	</tbody>
 </table>
 ${marker}`
-	console.timeEnd(t)
 	return html
 }
 function extractDescriptionsFromMarkdown(path){
-	var html=fs.readFileSync(path).toString().split(marker)[1]
+	var html=fs.readFileSync(path).toString().split(marker)[1]||'<div></div>'
 	var $=cheerio.load(html)
 	function requireUsefulDescription(txt,table,col){
 		return txt.replace(/<!-- replace this comment with \S+ description -->/,'')
@@ -308,7 +310,7 @@ function passesConventions(db,descriptions,opts){
 		}
 		,perTable:{
 			require_table_description_in_readme(table,tableName){
-				return !descriptions[tableName].description ? tableName : []
+				return !_.get(descriptions[tableName],'description',false) ? tableName : []
 			}
 			,require_primary_key(table,tableName){
 				return !db.tables[tableName].primary_key.length ? tableName : []
@@ -346,7 +348,7 @@ function passesConventions(db,descriptions,opts){
 			}
 			,require_column_description_in_readme(table,tableName,column,columnName){
 				return (
-						descriptions[tableName].columns[columnName]
+						_.get(descriptions[tableName],'columns.'+columnName,false)
 						|| isObviousColumn(columnName,tableName,db)
 					)
 					? []
@@ -444,7 +446,7 @@ async function run(opts={}){
 		}
 	}
 	async function psqlSetup(creds){
-		var pg=require('pg')
+		var pg=require('pg').Client
 		const client = new pg(creds)/*{
 			  host: '127.0.0.1',
 			  port: 5432,
@@ -465,12 +467,12 @@ async function run(opts={}){
 			  lang.match(/mysql/i)    ? await mysqlSetup(dbCreds)
 			: lang.match(/postgres/i) ? await psqlSetup(dbCreds)
 			: (()=>{throw new Error(`lang may only be 'mysql' or 'postgres', not '${lang}'`)})()
-		,database)
+		,lang.match(/postgres/i) ? 'public' : database)
 	var descriptions=extractDescriptionsFromMarkdown(path)
 	//console.log(JSON.stringify({descriptions},null,'\t'))
 	var html=makeMarkdownHtml(db,descriptions)
 	var file=fs.readFileSync(path).toString()
-	var [before,table,after]=file.split(marker)
+	var [before,table,after='']=file.split(marker)
 	fs.writeFileSync(path,`${before}${html}${after}`)
 	//by this point will be final state w/new things / old things removed
 	return passesConventions(db,descriptions,opts)
