@@ -1,0 +1,21 @@
+{
+  "name": "db-linter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "db-linter.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "args": "^3.0.8",
+    "cheerio": "^1.0.0-rc.2",
+    "compromise": "^11.2.1",
+    "drier": "^1.0.3",
+    "jest": "^22.0.4",
+    "lodash": "^4.17.4",
+    "mysql": "^2.15.0",
+    "pg": "^7.4.1"
+  }
+}
