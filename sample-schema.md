@@ -178,7 +178,7 @@
 			<td id='organism_dimension'>
 				<dd alt=table-description>
 					<a href='#organism_dimension'><code><b>organism_dimension</b></code></a>
-					- dimensions an organism has been found in
+					- 1 organism can be found in many dimensions
 				</dd>
 				<ul alt=table-columns>
 					<li id='organism_dimension.organism_id' >
