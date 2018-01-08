@@ -395,6 +395,7 @@ function passesConventions(db,descriptions,opts){
 	})
 	
 	if(problems.length){
+		var file=fs.readFileSync(opts.path).toString()
 		problems.forEach(({problem,ruleName})=>{
 			var msg=''
 			var target=problem
@@ -429,13 +430,6 @@ async function run(opts={}){
 	async function mysqlSetup(creds){
 		var mysql=require('mysql')
 		var connection = mysql.createConnection(creds)
-		/*{
-		  host     : 'localhost',
-		  user     : 'root',
-		  password : 'none',
-		  database : 'tempus',
-		  port     : 3306
-		});*/
 		return function(sql){
 			return new Promise((good,bad)=>{
 				connection.query(sql, function (error, results, fields) {
@@ -447,13 +441,7 @@ async function run(opts={}){
 	}
 	async function psqlSetup(creds){
 		var pg=require('pg').Client
-		const client = new pg(creds)/*{
-			  host: '127.0.0.1',
-			  port: 5432,
-			  user: 'postgres',
-			  password: '',
-			  database:'test'
-			})*/
+		const client = new pg(creds)
 		await client.connect()
 		return function(sql){
 			return new Promise(async (good,bad)=>{
