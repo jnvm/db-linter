@@ -1,7 +1,7 @@
 # db-linter
 
 Do you wish:
-* your codebase came with some [helpful markdown](#markdown-example) that provided a 
+* your codebase came with some [helpful github-flavored markdown](#markdown-example) that provided a 
 canonical, easily-linkable place for textual descriptions of database tables and columns to be stored?
 * and required team members to update them as new ones were added?
 * and made sure the schema followed certain conventions?
@@ -91,6 +91,8 @@ the signal that equivalent rigor is not worthwhile here, when of course it still
 ## Markdown Example
 Automatically rebuilt with updates, retaining descriptions devs provide.
 Note all links are deep-linkable for referencing in conversation.
+
+(Given github is where you would be viewing this file, the links work as expected there, not necessarily on npm.)
 
 A 4 col-max TOC is on top, for dbs with many tables.
 
