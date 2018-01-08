@@ -278,6 +278,12 @@ function passesConventions(db,descriptions,opts){
 		//should be able to insert user-supplied fxns somehow
 		else return false
 	}
+	var fileLines=fs.readFileSync(opts.path).toString().split('\n')
+	function findLineNumberOf(pattern){
+		return fileLines.reduce((num,line,i)=>
+			num || (line.match(pattern) ? i+1 : num )
+		,0)
+	}
 	
 	//don't have to repeat rule names this way
 	var rule={
@@ -310,7 +316,13 @@ function passesConventions(db,descriptions,opts){
 		}
 		,perTable:{
 			require_table_description_in_readme(table,tableName){
-				return !_.get(descriptions[tableName],'description',false) ? tableName : []
+				return !_.get(descriptions[tableName],'description',false)
+					? {target:tableName
+						,msg:`supply one at ${opts.path}#L${
+							findLineNumberOf(`replace this comment with ${tableName} description`)
+						}`
+					}
+					: []
 			}
 			,require_primary_key(table,tableName){
 				return !db.tables[tableName].primary_key.length ? tableName : []
@@ -352,7 +364,9 @@ function passesConventions(db,descriptions,opts){
 						|| isObviousColumn(columnName,tableName,db)
 					)
 					? []
-					: tableName+"."+columnName
+					: {target:tableName+"."+columnName,msg:`supply one at ${opts.path}#L${
+						findLineNumberOf(`replace this comment with ${tableName}.${columnName} description`)
+					}`}
 			}
 			,require_bool_prefix_on_only_bools(table,tableName,column,columnName){
 				var prefix=new RegExp(`^(${boolPrefixes.join('|')})_`)
@@ -395,12 +409,11 @@ function passesConventions(db,descriptions,opts){
 	})
 	
 	if(problems.length){
-		var file=fs.readFileSync(opts.path).toString()
 		problems.forEach(({problem,ruleName})=>{
 			var msg=''
 			var target=problem
 			if(_.isObject(problem))
-				({target}=problem)
+				({target,msg}=problem)
 			console.log(`* ${target}: ${ruleName} ${msg?`(${msg})`:''}`)
 		})
 		return false
