@@ -179,7 +179,7 @@ function makeMarkdownHtml(db,descriptions){
 			<th>Relations
 			<br>
 			${//put a spacer here as long as the longest table to keep all the arrows lined up
-				"&nbsp;".repeat(_.keys(db.tables).sort((a,b)=>b.length-a.length)[0].length)
+				"&ensp;".repeat(_.keys(db.tables).sort((a,b)=>b.length-a.length)[0].length+5)
 			}
 			</th>
 		</tr>
