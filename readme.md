@@ -1,7 +1,7 @@
 # db-linter
 
 Do you wish:
-* your codebase came with some helpful markdown that provided a 
+* your codebase came with some [helpful markdown](./sample-schema.md) that provided a 
 canonical, easily-linkable place for textual descriptions of database tables and columns to be stored?
 * and required team members to update them as new ones were added?
 * and made sure the schema followed certain conventions?
