@@ -1,6 +1,6 @@
 const _=require('lodash')
 const varIterator=require('drier')
-const {fs,cheerio,compromise,args}=varIterator(require)
+const {fs,cheerio,compromise}=varIterator(require)
 
 ;['unhandledRejection','uncaughtRejection'].forEach(e=>{
 	process.on(e,err=>{
@@ -409,6 +409,8 @@ function passesConventions(db,descriptions,opts){
 	})
 	
 	if(problems.length){
+		console.log('\nIssues:')
+		console.log('=======')
 		problems.forEach(({problem,ruleName})=>{
 			var msg=''
 			var target=problem
