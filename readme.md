@@ -75,7 +75,7 @@ This is done in a few steps:
 * **Documentation** - Being able to see an overview is desirable.
 Being able to point at something in conversation is helpful.
 Things not committed become folklore.
-* **Total Freedom Is Not Always Desirable** - Dev teams, especially those which suffer from high turnaround, 
+* **Total Freedom Is Not Always Desirable** - Dev teams, especially those which suffer from high turnover, 
 allow too much freedom in databases, which leads to local contradictions,
 which leads to ever-increasing mental overhead.
 Adding some reasonable rules can minimize the mental overhead necessary, and increase reliability.
