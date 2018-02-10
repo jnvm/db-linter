@@ -266,7 +266,7 @@ function makeMarkdownHtml(db,descriptions){
 				)
 				.concat('#'+link(tableName))
 				.concat(table.target_of_foreign_keys
-					.map(x=>`&emsp;⭦`+link(x.table_name))
+					.map(x=>`&emsp;↖`+link(x.table_name))
 				)
 				.join('<br/>\n'+'\t'.repeat(3))
 			}
