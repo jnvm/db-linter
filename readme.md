@@ -1,10 +1,11 @@
 # db-linter
 
 Do you wish:
-* your codebase came with some [helpful github-flavored markdown](#markdown-example) that provided a 
+* your codebase came with some [helpful github-flavored markdown](https://github.com/jnvm/db-linter#example) that provided a 
 canonical, easily-linkable place for textual descriptions of database tables and columns to be stored?
 * and required team members to update them as new ones were added?
 * and made sure the schema followed certain conventions?
+* or that your code had a dynamic definition of your database schema?
 
 Then this is for you.
 
@@ -16,36 +17,41 @@ Then this is for you.
     <li><a href='#how'>How</a></li>
     <li><a href='#why'>Why</a></li>
     <li><a href='#caveats'>Caveats</a></li>
-    <li><a href='#markdown-example'>Markdown Example</li>
+    <li><a href='#example'>Example</li>
 </ul></td></tr>
 </table>
 
 ## Setup
-Run this during your test suite:
+Run this during your test suite (or just `extractDbSchema` in your code if you want the object for your use):
 ```javascript
-require('db-linter').run({
+const {extractDbSchema,run} = require('db-linter')
+extractDbSchema({
 	//sql flavor
 	lang: 'postgres',//or 'mysql' (if using mariadb, say 'mysql')
 	//db creds
 	host: '127.0.0.1',
-	port: 5432,
+	//port: 5432,//optional; if empty, assumes 3306 if mysql, 5432 if postgres
 	user: 'postgres',//note this user will need access to information_schema
 	password: '',
 	database:'test',
-	//module settings
-	path:'./readme.md',//where it should look for a markdown file
-	    //with 2 <!--DB-LINTER--> tags between which
-	    //to place generated markdown
-	rules:'all',//or array of rule name strings from readme
-	//rule options
-	boolPrefixes:['is','allow'],
-	isObviousColumn:(columnName,tableName,db)=>{
-		//custom reasons a column does not need describing in your setup
-		//maybe columns that are everywhere, like created_at?
-		return false
-	}
 })
-.then(pass=> process.exit(pass ? 0 : 1))//or however you want to handle success / failure
+.then(db=>{
+	//or write your own convention checks once you have db
+	return run(db,{
+		path:'./readme.md',//which markdown to place/update the table
+		rules:'all',//or array of rule name strings from readme
+		//rule options
+		boolPrefixes:['is','allow'],
+		isObviousColumn:(columnName,tableName,db)=>{
+			//custom reasons a column does not need describing in your setup
+			//maybe columns that are everywhere, like created_at?
+			return false
+		}
+	})
+})
+.then( passedConventionCheck => //if this is false, all conventions were not followed
+	process.exit(passedConventionCheck ? 0 : 1)//or however you want to handle success / failure
+)
 ```
 
 Failed rules will be logged out for the dev to fix.
@@ -54,16 +60,16 @@ Failed rules will be logged out for the dev to fix.
 Below is the full list of built-in rules, but feel free to create your own and assess the json schema directly:
 
 * **`require_table_description_in_readme`** - all tables need explanations for why they exist. Sometimes even describing table `x_y` as `1 x can have many y's` will be appreciated going forward.
-* **`require_column_description_in_readme`** - all non-obvious (customizable) columns need explanations for why they exist.
+* **`require_column_description_in_readme`** - all non-obvious columns need explanations for why they exist. ("Non-obvious" is customizable with the `isObviousColumn()` in setup)
 * **`require_lower_snake_case_table_name`** - some instances, collations, & OSes are case insensitive, making this the only reliable naming style for tables and columns
 * **`require_lower_snake_case_column_name`** - see above.
 * **`disallow_bare_id`** - columns named `id` have repeatedly been found to create footgun-level ambiguity downstream, and make sql more verbose & confusing by eliminating utility of the `using` keyword
-* **`require_primary_key`** - each row should always be individually fetchable from each table, otherwise the data structure & needs may be at odds
+* **`require_primary_key`** - each row should always be individually fetchable from each table, otherwise the data structure & author needs may be at odds
 * **`require_unique_primary_keys`** - identical primary keys would suggest they should be the same table
-* **`require_singular_table_name`** - the table name should describe _each row_, not the table as a whole. A _table_ holds multiple records, otherwise it would be called a _pedestal_; clarity is _never_ added when a table is pluralized, it only makes remembering which part to pluralize harder when join tables inevitably have singular qualifiers.
+* **`require_singular_table_name`** - the table name should describe _each row_, not the table as a whole. A _table_ holds multiple records, otherwise it would be called a _pedestal_; clarity is _never_ added when a table is pluralized, it only makes remembering which part to pluralize harder when join tables inevitably have singular qualifiers.  Also, consider using names for tables that are not SQL keywords or quoting them over pluralizing.
 * **`require_all_foreign_keys`** - every column titled `x_id` (when `x` is another table) should have a foreign key to table `x`.  In composite primary key scenarios, this may require denormalizing properties to retain the link.
 * **`require_same_name_columns_share_type`** - reduces confusion when talking & promotes more unique names
-* **`require_bool_prefix_on_only_bools`** - `is_`, `allow_` (etc, add your list) should always refer to boolean columns
+* **`require_bool_prefix_on_only_bools`** - `is_`, `allow_` should always refer to boolean columns. (Prefix list customizable with the `boolPrefixes` in setup)
 
 ## How
 This is done in a few steps:
@@ -88,7 +94,7 @@ the signal that equivalent rigor is not worthwhile here, when of course it still
 * stored procedures, views, and enums are currently not considered, because they are not recommended.
 
 
-## Markdown Example
+## Example
 Automatically rebuilt with updates, retaining descriptions devs provide.
 Note all links are deep-linkable for referencing in conversation.
 
@@ -120,7 +126,10 @@ A 4 col-max TOC is on top, for dbs with many tables.
 	<thead>
 		<tr>
 			<th>Table</th>
-			<th>Relations<br>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;</th>
+			<th>Relations
+			<br>
+			&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;
+			</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -222,9 +231,9 @@ A 4 col-max TOC is on top, for dbs with many tables.
 				</ul>
 			</td>
 			<td>
-			&emsp;⭧<a href='#dimension'><code>dimension</code></a><br/>
-			&emsp;⭧<a href='#portal_gun'><code>portal_gun</code></a><br/>
-			&emsp;⭧<a href='#rick'><code>rick</code></a><br/>
+			&emsp;↗<a href='#dimension'><code>dimension</code></a><br/>
+			&emsp;↗<a href='#portal_gun'><code>portal_gun</code></a><br/>
+			&emsp;↗<a href='#rick'><code>rick</code></a><br/>
 			#<a href='#history'><code>history</code></a>
 			</td>
 		</tr>
@@ -250,7 +259,7 @@ A 4 col-max TOC is on top, for dbs with many tables.
 								<b><a href='#organism.name'>name</a></b>
 								<i alt=column-type>text <sub><sup>nullable</sup></sub></i>
 							</code>
-							- its apt & fitting name that was not made up on the spot
+							- its apt &amp; fitting name that was not made up on the spot
 						</dd>
 					</li>
 					<li id='organism.image' >
@@ -307,9 +316,9 @@ A 4 col-max TOC is on top, for dbs with many tables.
 				</ul>
 			</td>
 			<td>
-			&emsp;⭧<a href='#dimension'><code>dimension</code></a><br/>
-			&emsp;⭧<a href='#organism'><code>organism</code></a><br/>
-			&emsp;⭧<a href='#organism'><code>organism</code></a><br/>
+			&emsp;↗<a href='#dimension'><code>dimension</code></a><br/>
+			&emsp;↗<a href='#organism'><code>organism</code></a><br/>
+			&emsp;↗<a href='#organism'><code>organism</code></a><br/>
 			#<a href='#organism_dimension'><code>organism_dimension</code></a>
 			</td>
 		</tr>
@@ -341,7 +350,7 @@ A 4 col-max TOC is on top, for dbs with many tables.
 				</ul>
 			</td>
 			<td>
-			&emsp;⭧<a href='#rick'><code>rick</code></a><br/>
+			&emsp;↗<a href='#rick'><code>rick</code></a><br/>
 			#<a href='#portal_gun'><code>portal_gun</code></a><br/>
 			&emsp;⭦<a href='#history'><code>history</code></a>
 			</td>
@@ -401,7 +410,7 @@ A 4 col-max TOC is on top, for dbs with many tables.
 				</ul>
 			</td>
 			<td>
-			&emsp;⭧<a href='#dimension'><code>dimension</code></a><br/>
+			&emsp;↗<a href='#dimension'><code>dimension</code></a><br/>
 			#<a href='#rick'><code>rick</code></a><br/>
 			&emsp;⭦<a href='#history'><code>history</code></a><br/>
 			&emsp;⭦<a href='#portal_gun'><code>portal_gun</code></a>
@@ -411,8 +420,8 @@ A 4 col-max TOC is on top, for dbs with many tables.
 </table>
 <!--DB-LINTER-->
 
-Note you can place anything above or below the `<`!`--DB-LINTER--`!`>` markers.
-But only descriptions inside the table.  Everything else is regenerated.
+Note you can place anything _outside_ the `<`!`--DB-LINTER--`!`>` markers.
+But only descriptions inside, as everything else is regenerated between them.
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>

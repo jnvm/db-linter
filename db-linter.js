@@ -10,7 +10,47 @@ const {fs,cheerio,compromise}=varIterator(require)
 })
 
 var marker=`<!--DB-LINTER-->`
-async function makeDb(queryer,dbName){
+async function extractDbSchema(opts){
+	var {lang,database,user,password,host}=varIterator(x=>{
+		if(!(x in opts)){
+			console.error(x+' required as prop on extractDbSchema input {}!')
+			process.exit(0)
+		}
+		return opts[x]
+	})
+	var port=lang.match(/postgres/i) ? 5432 : 3306
+	var dbCreds={host,user,password,database,port}
+	async function mysqlSetup(creds){
+		var mysql=require('mysql')
+		var connection = mysql.createConnection(creds)
+		return function(sql){
+			return new Promise((good,bad)=>{
+				console.log({connection})
+				connection.query(sql, function (error, results, fields) {
+					if (error) bad(error)
+					else good(results)
+				})
+			})
+		}
+	}
+	async function psqlSetup(creds){
+		var pg=require('pg').Client
+		const client = new pg(creds)
+		await client.connect()
+		return function(sql){
+			return new Promise(async (good,bad)=>{
+				const res = await client.query(sql)
+				if(res) good(res.rows)
+				else bad(res)
+			})
+		}
+	}
+	var dbName=lang.match(/postgres/i) ? 'public' : database
+	var queryer=
+		  lang.match(/mysql/i)    ? await mysqlSetup(dbCreds)
+		: lang.match(/postgres/i) ? await psqlSetup(dbCreds)
+		: (()=>{throw new Error(`lang may only be 'mysql' or 'postgres', not '${lang}'`)})()
+	
 	/*
 	db={
 		tables:{
@@ -46,7 +86,6 @@ async function makeDb(queryer,dbName){
 		}
 	}
 	*/
-	
 	function splitPluralCols(row){
 		if(isMysql){
 			for(var key in row){
@@ -57,13 +96,12 @@ async function makeDb(queryer,dbName){
 		}
 		return row
 	}
-	
 	var hasExtra=(await queryer(`
 		select count(*) n
 		from information_schema.columns
 		where table_schema='information_schema'
 			and column_name='extra';`))[0].n*1
-	var isMysql=!!hasExtra
+	var isMysql=!!hasExtra//kind of already know this, but just checking
 	var groupFxn=isMysql? 'group_concat' : 'json_agg'
 
 	//mysql/mariadb
@@ -221,13 +259,14 @@ function makeMarkdownHtml(db,descriptions){
 			</td>
 			<td>
 			${
+			// ↗↖,⬀⬁,⥷⭃,⇱,⬈⬉,⭧⭦,🡕🡔,🡭🡬,🡥🡤,🡵🡴,🡽🡼,🢅🢄 ,⮣⮤
 				[]
 				.concat(table.foreign_keys
-					.map(x=>`&emsp;⭧`+link(x.foreign_table_name))//⮣
+					.map(x=>`&emsp;↗`+link(x.foreign_table_name))
 				)
 				.concat('#'+link(tableName))
 				.concat(table.target_of_foreign_keys
-					.map(x=>`&emsp;⭦`+link(x.table_name))//⭦⮤
+					.map(x=>`&emsp;⭦`+link(x.table_name))
 				)
 				.join('<br/>\n'+'\t'.repeat(3))
 			}
@@ -266,7 +305,7 @@ function extractDescriptionsFromMarkdown(path){
 		return set
 	},{})
 }
-function passesConventions(db,descriptions,opts){
+function checkConventions(db,descriptions,opts){
 	var problems=[]
 
 	var boolPrefixes=opts.boolPrefixes
@@ -426,77 +465,27 @@ function passesConventions(db,descriptions,opts){
 	}
 }
 
-async function run(opts={}){
+async function run(db,opts={}){
 	_.defaults(opts,{
 		path:'./readme.md',
 		rules:'all',
 		boolPrefixes:['is','allow'],
 		isObviousColumn:()=>false
 	})
-	
-	var {lang,database,user,password,host,port,path}=varIterator(x=>{
-		if(!(x in opts)){
-			console.error(x+' required in !')
-			process.exit(0)
-		}
-		return opts[x]
-	})
-	var dbCreds={host,user,password,database,port}
-	async function mysqlSetup(creds){
-		var mysql=require('mysql')
-		var connection = mysql.createConnection(creds)
-		return function(sql){
-			return new Promise((good,bad)=>{
-				connection.query(sql, function (error, results, fields) {
-					if (error) bad(error)
-					else good(results)
-				})
-			})
-		}
-	}
-	async function psqlSetup(creds){
-		var pg=require('pg').Client
-		const client = new pg(creds)
-		await client.connect()
-		return function(sql){
-			return new Promise(async (good,bad)=>{
-				const res = await client.query(sql)
-				if(res) good(res.rows)
-				else bad(res)
-			})
-		}
-	}
-	var db=await makeDb(
-			  lang.match(/mysql/i)    ? await mysqlSetup(dbCreds)
-			: lang.match(/postgres/i) ? await psqlSetup(dbCreds)
-			: (()=>{throw new Error(`lang may only be 'mysql' or 'postgres', not '${lang}'`)})()
-		,lang.match(/postgres/i) ? 'public' : database)
-	var descriptions=extractDescriptionsFromMarkdown(path)
+	var descriptions=extractDescriptionsFromMarkdown(opts.path)
 	//console.log(JSON.stringify({descriptions},null,'\t'))
 	var html=makeMarkdownHtml(db,descriptions)
-	var file=fs.readFileSync(path).toString()
-	var [before,table,after='']=file.split(marker)
-	fs.writeFileSync(path,`${before}${html}${after}`)
+	var file=fs.readFileSync(opts.path).toString()
+	var [before='',table,after='']=file.split(marker)
+	fs.writeFileSync(opts.path,`${before}${html}${after}`)
 	//by this point will be final state w/new things / old things removed
-	return passesConventions(db,descriptions,opts)
+	return checkConventions(db,descriptions,opts)
 }
 
-//progammatic
-//if(module.parent)
 module.exports = {
 	run
-	,makeDb
+	,extractDbSchema
 	,makeMarkdownHtml
 	,extractDescriptionsFromMarkdown
-	,passesConventions
+	,checkConventions
 }
-/* //later
-//cli
-else{
-	args//.option('readmePath', 'The path to the file with 2 <!--SCHEMIZE--> tags between which it should place the markdown it generates', './readme.md')
-		.option('settings', 'The path to a js file which exports a settings object', './db-lint-settings.js')
-	const flags = args.parse(process.argv)
-	
-	run()
-}
-*/
