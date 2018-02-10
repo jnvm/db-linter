@@ -171,9 +171,9 @@ A 4 col-max TOC is on top, for dbs with many tables.
 			</td>
 			<td>
 			#<a href='#dimension'><code>dimension</code></a><br/>
-			&emsp;⭦<a href='#history'><code>history</code></a><br/>
-			&emsp;⭦<a href='#organism_dimension'><code>organism_dimension</code></a><br/>
-			&emsp;⭦<a href='#rick'><code>rick</code></a>
+			&emsp;↖<a href='#history'><code>history</code></a><br/>
+			&emsp;↖<a href='#organism_dimension'><code>organism_dimension</code></a><br/>
+			&emsp;↖<a href='#rick'><code>rick</code></a>
 			</td>
 		</tr>
 		<tr>
@@ -275,8 +275,8 @@ A 4 col-max TOC is on top, for dbs with many tables.
 			</td>
 			<td>
 			#<a href='#organism'><code>organism</code></a><br/>
-			&emsp;⭦<a href='#organism_dimension'><code>organism_dimension</code></a><br/>
-			&emsp;⭦<a href='#organism_dimension'><code>organism_dimension</code></a>
+			&emsp;↖<a href='#organism_dimension'><code>organism_dimension</code></a><br/>
+			&emsp;↖<a href='#organism_dimension'><code>organism_dimension</code></a>
 			</td>
 		</tr>
 		<tr>
@@ -352,7 +352,7 @@ A 4 col-max TOC is on top, for dbs with many tables.
 			<td>
 			&emsp;↗<a href='#rick'><code>rick</code></a><br/>
 			#<a href='#portal_gun'><code>portal_gun</code></a><br/>
-			&emsp;⭦<a href='#history'><code>history</code></a>
+			&emsp;↖<a href='#history'><code>history</code></a>
 			</td>
 		</tr>
 		<tr>
@@ -412,8 +412,8 @@ A 4 col-max TOC is on top, for dbs with many tables.
 			<td>
 			&emsp;↗<a href='#dimension'><code>dimension</code></a><br/>
 			#<a href='#rick'><code>rick</code></a><br/>
-			&emsp;⭦<a href='#history'><code>history</code></a><br/>
-			&emsp;⭦<a href='#portal_gun'><code>portal_gun</code></a>
+			&emsp;↖<a href='#history'><code>history</code></a><br/>
+			&emsp;↖<a href='#portal_gun'><code>portal_gun</code></a>
 			</td>
 		</tr>
 	</tbody>
