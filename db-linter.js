@@ -424,7 +424,7 @@ function checkConventions(db,descriptions,opts){
 	}
 	
 	function performCheck(check,ruleName,...args){
-		return ((opts.rules=='all' || opts.rules[ruleName])
+		return ((opts.rules=='all' || (_.isArray(opts.rules) && opts.rules.includes(ruleName)))
 			? _.castArray(check(...args))
 			: []
 			).map(problem=>({ruleName,problem}))
