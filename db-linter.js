@@ -18,7 +18,7 @@ async function extractDbSchema(opts){
 		}
 		return opts[x]
 	})
-	var port=lang.match(/postgres/i) ? 5432 : 3306
+	var port=opts.port||(lang.match(/postgres/i) ? 5432 : 3306)
 	var dbCreds={host,user,password,database,port}
 	async function mysqlSetup(creds){
 		var mysql=require('mysql')
