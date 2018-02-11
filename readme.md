@@ -275,7 +275,6 @@ A 4 col-max TOC is on top, for dbs with many tables.
 			</td>
 			<td>
 			#<a href='#organism'><code>organism</code></a><br/>
-			&emsp;↖<a href='#organism_dimension'><code>organism_dimension</code></a><br/>
 			&emsp;↖<a href='#organism_dimension'><code>organism_dimension</code></a>
 			</td>
 		</tr>
@@ -317,7 +316,6 @@ A 4 col-max TOC is on top, for dbs with many tables.
 			</td>
 			<td>
 			&emsp;↗<a href='#dimension'><code>dimension</code></a><br/>
-			&emsp;↗<a href='#organism'><code>organism</code></a><br/>
 			&emsp;↗<a href='#organism'><code>organism</code></a><br/>
 			#<a href='#organism_dimension'><code>organism_dimension</code></a>
 			</td>
