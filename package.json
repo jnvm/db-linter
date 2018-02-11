@@ -1,6 +1,6 @@
 {
   "name": "db-linter",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "generate markdown for & enforce documentation & conventions on database",
   "main": "db-linter.js",
   "scripts": {
