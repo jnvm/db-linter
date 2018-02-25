@@ -1,6 +1,6 @@
 {
   "name": "db-linter",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "generate markdown for & enforce documentation & conventions on database",
   "main": "db-linter.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "compromise": "^11.2.1",
-    "drier": "^1.0.3",
+    "eachvar": "^1.0.0",
     "lodash": "^4.17.4",
     "mysql": "^2.15.0",
     "pg": "^7.4.1"

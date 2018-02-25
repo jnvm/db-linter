@@ -1,6 +1,6 @@
 const _=require('lodash')
-const varIterator=require('drier')
-const {fs,cheerio,compromise}=varIterator(require)
+const eachVar=require('eachVar')
+const {fs,cheerio,compromise}=eachVar(require)
 
 ;['unhandledRejection','uncaughtRejection'].forEach(e=>{
 	process.on(e,err=>{
@@ -11,7 +11,7 @@ const {fs,cheerio,compromise}=varIterator(require)
 
 var marker=`<!--DB-LINTER-->`
 async function extractDbSchema(opts){
-	var {lang,database,user,password,host}=varIterator(x=>{
+	var {lang,database,user,password,host}=eachVar(x=>{
 		if(!(x in opts)){
 			console.error(x+' required as prop on extractDbSchema input {}!')
 			process.exit(0)
