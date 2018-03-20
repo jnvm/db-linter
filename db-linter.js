@@ -447,8 +447,8 @@ function checkConventions(db,descriptions,opts){
 	})
 	
 	if(problems.length){
-		console.log('\nIssues:')
-		console.log('=======')
+		var title=`${opts.database} Issues:`
+		console.log(`\n${title}\n${title.replace(/./g,'=')}`)
 		problems.forEach(({problem,ruleName})=>{
 			var msg=''
 			var target=problem
