@@ -25,7 +25,6 @@ async function extractDbSchema(opts){
 		var connection = mysql.createConnection(creds)
 		return function(sql){
 			return new Promise((good,bad)=>{
-				console.log({connection})
 				connection.query(sql, function (error, results, fields) {
 					if (error) bad(error)
 					else good(results)
