@@ -1,14 +1,14 @@
 const _=require('lodash')
 const eachVar=require('eachVar')
 const {fs,cheerio,compromise}=eachVar(require)
-
+/*
 ;['unhandledRejection','uncaughtRejection'].forEach(e=>{
 	process.on(e,err=>{
 		console.error(err)
 		process.exit(1)
 	})
 })
-
+*/
 var marker=`<!--DB-LINTER-->`
 async function extractDbSchema(opts){
 	var {lang,database,user,password,host}=eachVar(x=>{
@@ -52,6 +52,7 @@ async function extractDbSchema(opts){
 	
 	/*
 	db={
+		name:db_name,
 		tables:{
 			[table_name]:{
 				columns:{
@@ -151,7 +152,7 @@ and constraint_type='FOREIGN KEY'
 group by table_name,constraint_name,referenced_table_name`)).map(splitPluralCols)
 
 
-	var db={tables:{}}
+	var db={name:database,tables:{}}
 
 	columns.forEach(row=>{
 		//console.log(row.table_name,row.column_name,row.column_default)
@@ -447,7 +448,7 @@ function checkConventions(db,descriptions,opts){
 	})
 	
 	if(problems.length){
-		var title=`${opts.database} Issues:`
+		var title=`${db.name} Issues:`
 		console.log(`\n${title}\n${title.replace(/./g,'=')}`)
 		problems.forEach(({problem,ruleName})=>{
 			var msg=''

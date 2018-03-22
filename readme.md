@@ -14,6 +14,7 @@ Then this is for you.
 <tr><td><ul>
     <li><a href='#setup'>Setup</a></li>
     <li><a href='#rules'>Rules</a></li>
+    <li><a href='#db'><code>db</code></a></li>
     <li><a href='#how'>How</a></li>
     <li><a href='#why'>Why</a></li>
     <li><a href='#caveats'>Caveats</a></li>
@@ -22,7 +23,7 @@ Then this is for you.
 </table>
 
 ## Setup
-Run this during your test suite (or just `extractDbSchema` in your code if you want the object for your use):
+Run this during your test suite (or just `extractDbSchema` in your code if you want [the `db` object](#db) for your use):
 ```javascript
 const {extractDbSchema,run} = require('db-linter')
 extractDbSchema({
@@ -71,11 +72,53 @@ Below is the full list of built-in rules, but feel free to create your own and a
 * **`require_same_name_columns_share_type`** - reduces confusion when talking & promotes more unique names
 * **`require_bool_prefix_on_only_bools`** - `is_`, `allow_` should always refer to boolean columns. (Prefix list customizable with the `boolPrefixes` in setup)
 
+## `db`
+
+The `db` object `extractDbSchema()` creates has this structure:
+```javascript
+const db = {
+	name:db_name,
+	tables:{
+		[table_name]:{
+			columns:{
+				[column_name]:{
+					type,
+					ordinal_position,
+					default,
+					is_nullable
+				},...
+			},
+			primary_key:[column_name,...],
+			foreign_keys:[
+				{
+					constraint_name,
+					table_name, //will be parent table_name
+					column_names,
+					foreign_table_name,
+					foreign_column_names,
+				},...
+			],
+			target_of_foreign_keys:[
+				{
+					constraint_name,
+					table_name,
+					column_names,
+					foreign_table_name,//will be parent table_name
+					foreign_column_names,
+				},...
+			]
+		}
+	},...
+}
+```
+
 ## How
 This is done in a few steps:
-1. it queries `information_schema` to provide a json schema representation of your **mysql** or **postgres** db (which you can also use in your code)
-2. it constructs and updates a git-flavored markdown readme of your db from this json that preserves user-supplied descriptions across rebuilds, with each table and column deep-linkable
-3. it checks whether the current state of the db follows the desired rules
+1. `extractDbSchema(opts)` queries `information_schema` to provide a [json schema](#db) representation of your **mysql** or **postgres** db (which you can also use in your code)
+2. `run(db,opts)`:
+	* `extractDescriptionsFromMarkdown(path)` extracts descriptions from the markdown file.
+	* `makeMarkdownHtml(db,descriptions)` reconstructs and updates a git-flavored markdown readme of your db from the extracted json & descriptions, preserving descriptions across rebuilds, with each table and column deep-linkable
+	* `checkConventions(db,descriptions,opts)` checks whether the current state of the db follows the desired rules
 
 ## Why
 * **Documentation** - Being able to see an overview is desirable.
@@ -93,12 +136,11 @@ the signal that equivalent rigor is not worthwhile here, when of course it still
 ## Caveats
 * stored procedures, views, and enums are currently not considered, because they are not recommended.
 
-
 ## Example
+Looks best & links all work if viewed as [github-flavored markdown](https://github.com/jnvm/db-linter#example).
+
 Automatically rebuilt with updates, retaining descriptions devs provide.
 Note all links are deep-linkable for referencing in conversation.
-
-(Given github is where you would be viewing this file, the links work as expected there, not necessarily on npm.)
 
 A 4 col-max TOC is on top, for dbs with many tables.
 
@@ -418,8 +460,9 @@ A 4 col-max TOC is on top, for dbs with many tables.
 </table>
 <!--DB-LINTER-->
 
-Note you can place anything _outside_ the `<`!`--DB-LINTER--`!`>` markers.
-But only descriptions inside, as everything else is regenerated between them.
+Note you can place anything _outside_ the `<`!`--DB-LINTER-->` markers surrounding the added markup.
+
+But only descriptions _inside_, as everything else is regenerated between them.
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
