@@ -1,5 +1,5 @@
 const _=require('lodash')
-const eachVar=require('eachVar')
+const eachVar=require('eachvar')
 const {fs,cheerio,compromise}=eachVar(require)
 /*
 ;['unhandledRejection','uncaughtRejection'].forEach(e=>{
