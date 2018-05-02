@@ -189,14 +189,14 @@ function makeMarkdownHtml(db,descriptions){
 	}
 	var html=`${marker}
 <table>
-	<!--<thead><tr><th colspan=4 >Tables</th></tr></thead>-->
+	<!--<thead><tr><th colspan=3 >Tables</th></tr></thead>-->
 	<tbody>${(function makeTOC(){
 			var tables=_.keys(db.tables)
 			var n=tables.length
 			n=n+(n%2)//make even
-			//always assume more than present to never exceed 4 cols
+			//always assume more than present to never exceed 3 cols
 			n+=2
-			var cols=4
+			var cols=3
 			return `
 		<tr valign=top >${_.chunk(tables,n/cols)
 			.map(tableNames=>`
@@ -367,7 +367,7 @@ function checkConventions(db,descriptions,opts){
 				return !db.tables[tableName].primary_key.length ? tableName : []
 			}
 			,require_singular_table_name(table,tableName){
-				return compromise(tableName).match('#singular').list.length ? [] : tableName
+				return compromise(_.lowerCase(tableName)).match('#plural').list.length ? tableName : []
 			}
 			,require_lower_snake_case_table_name(table,tableName){
 				return tableName==_.snakeCase(tableName) ? [] : tableName

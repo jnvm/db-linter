@@ -135,6 +135,15 @@ the signal that equivalent rigor is not worthwhile here, when of course it still
 
 ## Caveats
 * stored procedures, views, and enums are currently not considered, because they are not recommended.
+* the natural language processing module [`compromise`](npmjs.com/compromise) to detect plurals is not perfect.  Sometimes you might have to give it hints atop your setup file to interpret certain words as nouns which could act as verbs, like `template` in this case:
+```javascript
+let nlp=require('compromise')//will be available if `db-linter` is installed
+nlp('',{
+	//word:'Noun'
+	template:'Noun',
+	//...
+})
+``` 
 
 ## Example
 Looks best & links all work if viewed as [github-flavored markdown](https://github.com/jnvm/db-linter#example).
@@ -142,7 +151,11 @@ Looks best & links all work if viewed as [github-flavored markdown](https://gith
 Automatically rebuilt with updates, retaining descriptions devs provide.
 Note all links are deep-linkable for referencing in conversation.
 
-A 4 col-max TOC is on top, for dbs with many tables.
+A 3 col-max TOC is on top, for dbs with many tables.
+
+Note you can place anything _outside_ the `<`!`--DB-LINTER-->` markers surrounding the added markup.
+
+But only descriptions _inside_, as everything else is regenerated between them.
 
 <!--DB-LINTER-->
 <table>
@@ -459,10 +472,6 @@ A 4 col-max TOC is on top, for dbs with many tables.
 	</tbody>
 </table>
 <!--DB-LINTER-->
-
-Note you can place anything _outside_ the `<`!`--DB-LINTER-->` markers surrounding the added markup.
-
-But only descriptions _inside_, as everything else is regenerated between them.
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
